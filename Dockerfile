@@ -1,8 +1,8 @@
 # Qwen Image Edit Multi-Angle - Network Volume
-# CUDA 12.4 + PyTorch cu124 (runtime - smaller image)
+# CUDA 12.8 + PyTorch cu128 (Blackwell/5090 support)
 # Tag: ghcr.io/bxone-git/xicon-multiangle-serverless:latest
 
-FROM nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
+FROM nvidia/cuda:12.8.1-cudnn-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
@@ -16,9 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && ln -sf /usr/bin/python3.10 /usr/bin/python
 
-# PyTorch with CUDA 12.4 (no torchaudio - not needed)
+# PyTorch with CUDA 12.8 (no torchaudio - not needed)
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu124
+    pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu128
 
 # Python packages
 RUN pip install --no-cache-dir -U "huggingface_hub[hf_transfer]" runpod websocket-client
