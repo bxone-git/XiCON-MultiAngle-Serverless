@@ -2,7 +2,7 @@
 # CUDA 12.4 + PyTorch cu124 (runtime - smaller image)
 # Tag: ghcr.io/bxone-git/xicon-multiangle-serverless:latest
 
-FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+FROM nvidia/cuda:12.4.1-cudnn-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
@@ -22,6 +22,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Python packages
 RUN pip install --no-cache-dir -U "huggingface_hub[hf_transfer]" runpod websocket-client
+RUN pip install --no-cache-dir triton sageattention --no-build-isolation
 
 WORKDIR /
 

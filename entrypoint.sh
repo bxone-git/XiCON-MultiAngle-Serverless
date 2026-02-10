@@ -95,7 +95,7 @@ echo "Detected GPU: $GPU_NAME"
 
 # Start ComfyUI
 echo "Starting ComfyUI..."
-python /ComfyUI/main.py --listen &
+python /ComfyUI/main.py --listen --use-sage-attention &
 
 # Wait for ComfyUI
 echo "Waiting for ComfyUI..."
