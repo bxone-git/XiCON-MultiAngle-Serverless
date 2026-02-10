@@ -44,11 +44,11 @@ download_if_missing() {
     else
         echo "  [DOWNLOADING] $name..."
         mkdir -p "$(dirname "$filepath")"
-        HF_AUTH=""
         if [ -n "$HF_TOKEN" ]; then
-            HF_AUTH="--header=Authorization: Bearer $HF_TOKEN"
+            wget --progress=dot:giga --header "Authorization: Bearer $HF_TOKEN" -O "$filepath" "$url"
+        else
+            wget --progress=dot:giga -O "$filepath" "$url"
         fi
-        wget -q --show-progress $HF_AUTH -O "$filepath" "$url"
         if [ $? -eq 0 ]; then
             echo "  [OK] $name (downloaded)"
         else
