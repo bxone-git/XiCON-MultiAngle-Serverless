@@ -1,0 +1,1333 @@
+{
+  "100": {
+    "inputs": {
+      "unet_name": "qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model"
+    }
+  },
+  "101": {
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP"
+    }
+  },
+  "102": {
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "103": {
+    "inputs": {
+      "lora_name": "Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors",
+      "strength_model": 1,
+      "model": [
+        "100",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load LoRA - Lightning"
+    }
+  },
+  "104": {
+    "inputs": {
+      "lora_name": "Qwen-Edit-2509-Multiple-angles.safetensors",
+      "strength_model": 1,
+      "model": [
+        "103",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "Load LoRA - Multiple Angles"
+    }
+  },
+  "200": {
+    "inputs": {
+      "image": "input_image.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Input Image"
+    }
+  },
+  "110": {
+    "inputs": {
+      "model": [
+        "104",
+        0
+      ],
+      "shift": 3.0
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "close_up - ModelSamplingAuraFlow"
+    }
+  },
+  "111": {
+    "inputs": {
+      "model": [
+        "110",
+        0
+      ],
+      "strength": 1.0
+    },
+    "class_type": "CFGNorm",
+    "_meta": {
+      "title": "close_up - CFGNorm"
+    }
+  },
+  "112": {
+    "inputs": {
+      "image": [
+        "200",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "megapixels": 1.0,
+      "resolution_steps": 1
+    },
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "close_up - ImageScaleToTotalPixels"
+    }
+  },
+  "113": {
+    "inputs": {
+      "pixels": [
+        "112",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "close_up - VAEEncode"
+    }
+  },
+  "114": {
+    "inputs": {
+      "prompt": " Turn the camera to a close-up.\n",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "112",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "close_up - POSITIVE"
+    }
+  },
+  "115": {
+    "inputs": {
+      "prompt": "",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "112",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "close_up - NEGATIVE"
+    }
+  },
+  "116": {
+    "inputs": {
+      "seed": 2582668243,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "model": [
+        "111",
+        0
+      ],
+      "positive": [
+        "114",
+        0
+      ],
+      "negative": [
+        "115",
+        0
+      ],
+      "latent_image": [
+        "113",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "close_up - KSampler"
+    }
+  },
+  "117": {
+    "inputs": {
+      "samples": [
+        "116",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "close_up - VAEDecode"
+    }
+  },
+  "118": {
+    "inputs": {
+      "images": [
+        "117",
+        0
+      ],
+      "filename_prefix": "MultiAngle-close_up"
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "close_up - SaveImage"
+    }
+  },
+  "120": {
+    "inputs": {
+      "model": [
+        "104",
+        0
+      ],
+      "shift": 3.0
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "wide_shot - ModelSamplingAuraFlow"
+    }
+  },
+  "121": {
+    "inputs": {
+      "model": [
+        "120",
+        0
+      ],
+      "strength": 1.0
+    },
+    "class_type": "CFGNorm",
+    "_meta": {
+      "title": "wide_shot - CFGNorm"
+    }
+  },
+  "122": {
+    "inputs": {
+      "image": [
+        "200",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "megapixels": 1.0,
+      "resolution_steps": 1
+    },
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "wide_shot - ImageScaleToTotalPixels"
+    }
+  },
+  "123": {
+    "inputs": {
+      "pixels": [
+        "122",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "wide_shot - VAEEncode"
+    }
+  },
+  "124": {
+    "inputs": {
+      "prompt": "Turn the camera to a wide-angle lens.\n",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "122",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "wide_shot - POSITIVE"
+    }
+  },
+  "125": {
+    "inputs": {
+      "prompt": "",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "122",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "wide_shot - NEGATIVE"
+    }
+  },
+  "126": {
+    "inputs": {
+      "seed": 2371278652,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "model": [
+        "121",
+        0
+      ],
+      "positive": [
+        "124",
+        0
+      ],
+      "negative": [
+        "125",
+        0
+      ],
+      "latent_image": [
+        "123",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "wide_shot - KSampler"
+    }
+  },
+  "127": {
+    "inputs": {
+      "samples": [
+        "126",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "wide_shot - VAEDecode"
+    }
+  },
+  "128": {
+    "inputs": {
+      "images": [
+        "127",
+        0
+      ],
+      "filename_prefix": "MultiAngle-wide_shot"
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "wide_shot - SaveImage"
+    }
+  },
+  "130": {
+    "inputs": {
+      "model": [
+        "104",
+        0
+      ],
+      "shift": 3.0
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "45_right - ModelSamplingAuraFlow"
+    }
+  },
+  "131": {
+    "inputs": {
+      "model": [
+        "130",
+        0
+      ],
+      "strength": 1.0
+    },
+    "class_type": "CFGNorm",
+    "_meta": {
+      "title": "45_right - CFGNorm"
+    }
+  },
+  "132": {
+    "inputs": {
+      "image": [
+        "200",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "megapixels": 1.0,
+      "resolution_steps": 1
+    },
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "45_right - ImageScaleToTotalPixels"
+    }
+  },
+  "133": {
+    "inputs": {
+      "pixels": [
+        "132",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "45_right - VAEEncode"
+    }
+  },
+  "134": {
+    "inputs": {
+      "prompt": "Rotate the camera 45 degrees to the right.\n",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "132",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "45_right - POSITIVE"
+    }
+  },
+  "135": {
+    "inputs": {
+      "prompt": "",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "132",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "45_right - NEGATIVE"
+    }
+  },
+  "136": {
+    "inputs": {
+      "seed": 1970744521,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "model": [
+        "131",
+        0
+      ],
+      "positive": [
+        "134",
+        0
+      ],
+      "negative": [
+        "135",
+        0
+      ],
+      "latent_image": [
+        "133",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "45_right - KSampler"
+    }
+  },
+  "137": {
+    "inputs": {
+      "samples": [
+        "136",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "45_right - VAEDecode"
+    }
+  },
+  "138": {
+    "inputs": {
+      "images": [
+        "137",
+        0
+      ],
+      "filename_prefix": "MultiAngle-45_right"
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "45_right - SaveImage"
+    }
+  },
+  "140": {
+    "inputs": {
+      "model": [
+        "104",
+        0
+      ],
+      "shift": 3.0
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "90_right - ModelSamplingAuraFlow"
+    }
+  },
+  "141": {
+    "inputs": {
+      "model": [
+        "140",
+        0
+      ],
+      "strength": 1.0
+    },
+    "class_type": "CFGNorm",
+    "_meta": {
+      "title": "90_right - CFGNorm"
+    }
+  },
+  "142": {
+    "inputs": {
+      "image": [
+        "200",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "megapixels": 1.0,
+      "resolution_steps": 1
+    },
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "90_right - ImageScaleToTotalPixels"
+    }
+  },
+  "143": {
+    "inputs": {
+      "pixels": [
+        "142",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "90_right - VAEEncode"
+    }
+  },
+  "144": {
+    "inputs": {
+      "prompt": "Rotate the camera 90 degrees to the right.\n",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "142",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "90_right - POSITIVE"
+    }
+  },
+  "145": {
+    "inputs": {
+      "prompt": "",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "142",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "90_right - NEGATIVE"
+    }
+  },
+  "146": {
+    "inputs": {
+      "seed": 1976839750,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "model": [
+        "141",
+        0
+      ],
+      "positive": [
+        "144",
+        0
+      ],
+      "negative": [
+        "145",
+        0
+      ],
+      "latent_image": [
+        "143",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "90_right - KSampler"
+    }
+  },
+  "147": {
+    "inputs": {
+      "samples": [
+        "146",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "90_right - VAEDecode"
+    }
+  },
+  "148": {
+    "inputs": {
+      "images": [
+        "147",
+        0
+      ],
+      "filename_prefix": "MultiAngle-90_right"
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "90_right - SaveImage"
+    }
+  },
+  "150": {
+    "inputs": {
+      "model": [
+        "104",
+        0
+      ],
+      "shift": 3.0
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "aerial_view - ModelSamplingAuraFlow"
+    }
+  },
+  "151": {
+    "inputs": {
+      "model": [
+        "150",
+        0
+      ],
+      "strength": 1.0
+    },
+    "class_type": "CFGNorm",
+    "_meta": {
+      "title": "aerial_view - CFGNorm"
+    }
+  },
+  "152": {
+    "inputs": {
+      "image": [
+        "200",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "megapixels": 1.0,
+      "resolution_steps": 1
+    },
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "aerial_view - ImageScaleToTotalPixels"
+    }
+  },
+  "153": {
+    "inputs": {
+      "pixels": [
+        "152",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "aerial_view - VAEEncode"
+    }
+  },
+  "154": {
+    "inputs": {
+      "prompt": "Turn the camera to an aerial view.",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "152",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "aerial_view - POSITIVE"
+    }
+  },
+  "155": {
+    "inputs": {
+      "prompt": "",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "152",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "aerial_view - NEGATIVE"
+    }
+  },
+  "156": {
+    "inputs": {
+      "seed": 2434634527,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "model": [
+        "151",
+        0
+      ],
+      "positive": [
+        "154",
+        0
+      ],
+      "negative": [
+        "155",
+        0
+      ],
+      "latent_image": [
+        "153",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "aerial_view - KSampler"
+    }
+  },
+  "157": {
+    "inputs": {
+      "samples": [
+        "156",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "aerial_view - VAEDecode"
+    }
+  },
+  "158": {
+    "inputs": {
+      "images": [
+        "157",
+        0
+      ],
+      "filename_prefix": "MultiAngle-aerial_view"
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "aerial_view - SaveImage"
+    }
+  },
+  "160": {
+    "inputs": {
+      "model": [
+        "104",
+        0
+      ],
+      "shift": 3.0
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "low_angle - ModelSamplingAuraFlow"
+    }
+  },
+  "161": {
+    "inputs": {
+      "model": [
+        "160",
+        0
+      ],
+      "strength": 1.0
+    },
+    "class_type": "CFGNorm",
+    "_meta": {
+      "title": "low_angle - CFGNorm"
+    }
+  },
+  "162": {
+    "inputs": {
+      "image": [
+        "200",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "megapixels": 1.0,
+      "resolution_steps": 1
+    },
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "low_angle - ImageScaleToTotalPixels"
+    }
+  },
+  "163": {
+    "inputs": {
+      "pixels": [
+        "162",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "low_angle - VAEEncode"
+    }
+  },
+  "164": {
+    "inputs": {
+      "prompt": "Turn the camera to a low-angle view.",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "162",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "low_angle - POSITIVE"
+    }
+  },
+  "165": {
+    "inputs": {
+      "prompt": "",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "162",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "low_angle - NEGATIVE"
+    }
+  },
+  "166": {
+    "inputs": {
+      "seed": 1534201607,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "model": [
+        "161",
+        0
+      ],
+      "positive": [
+        "164",
+        0
+      ],
+      "negative": [
+        "165",
+        0
+      ],
+      "latent_image": [
+        "163",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "low_angle - KSampler"
+    }
+  },
+  "167": {
+    "inputs": {
+      "samples": [
+        "166",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "low_angle - VAEDecode"
+    }
+  },
+  "168": {
+    "inputs": {
+      "images": [
+        "167",
+        0
+      ],
+      "filename_prefix": "MultiAngle-low_angle"
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "low_angle - SaveImage"
+    }
+  },
+  "170": {
+    "inputs": {
+      "model": [
+        "104",
+        0
+      ],
+      "shift": 3.0
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "45_left - ModelSamplingAuraFlow"
+    }
+  },
+  "171": {
+    "inputs": {
+      "model": [
+        "170",
+        0
+      ],
+      "strength": 1.0
+    },
+    "class_type": "CFGNorm",
+    "_meta": {
+      "title": "45_left - CFGNorm"
+    }
+  },
+  "172": {
+    "inputs": {
+      "image": [
+        "200",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "megapixels": 1.0,
+      "resolution_steps": 1
+    },
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "45_left - ImageScaleToTotalPixels"
+    }
+  },
+  "173": {
+    "inputs": {
+      "pixels": [
+        "172",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "45_left - VAEEncode"
+    }
+  },
+  "174": {
+    "inputs": {
+      "prompt": "Rotate the camera 45 degrees to the left.",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "172",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "45_left - POSITIVE"
+    }
+  },
+  "175": {
+    "inputs": {
+      "prompt": "",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "172",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "45_left - NEGATIVE"
+    }
+  },
+  "176": {
+    "inputs": {
+      "seed": 269707526,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "model": [
+        "171",
+        0
+      ],
+      "positive": [
+        "174",
+        0
+      ],
+      "negative": [
+        "175",
+        0
+      ],
+      "latent_image": [
+        "173",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "45_left - KSampler"
+    }
+  },
+  "177": {
+    "inputs": {
+      "samples": [
+        "176",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "45_left - VAEDecode"
+    }
+  },
+  "178": {
+    "inputs": {
+      "images": [
+        "177",
+        0
+      ],
+      "filename_prefix": "MultiAngle-45_left"
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "45_left - SaveImage"
+    }
+  },
+  "180": {
+    "inputs": {
+      "model": [
+        "104",
+        0
+      ],
+      "shift": 3.0
+    },
+    "class_type": "ModelSamplingAuraFlow",
+    "_meta": {
+      "title": "90_left - ModelSamplingAuraFlow"
+    }
+  },
+  "181": {
+    "inputs": {
+      "model": [
+        "180",
+        0
+      ],
+      "strength": 1.0
+    },
+    "class_type": "CFGNorm",
+    "_meta": {
+      "title": "90_left - CFGNorm"
+    }
+  },
+  "182": {
+    "inputs": {
+      "image": [
+        "200",
+        0
+      ],
+      "upscale_method": "nearest-exact",
+      "megapixels": 1.0,
+      "resolution_steps": 1
+    },
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "90_left - ImageScaleToTotalPixels"
+    }
+  },
+  "183": {
+    "inputs": {
+      "pixels": [
+        "182",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "90_left - VAEEncode"
+    }
+  },
+  "184": {
+    "inputs": {
+      "prompt": "Rotate the camera 90 degrees to the left.",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "182",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "90_left - POSITIVE"
+    }
+  },
+  "185": {
+    "inputs": {
+      "prompt": "",
+      "clip": [
+        "101",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ],
+      "image1": [
+        "182",
+        0
+      ]
+    },
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "_meta": {
+      "title": "90_left - NEGATIVE"
+    }
+  },
+  "186": {
+    "inputs": {
+      "seed": 3956992264,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0,
+      "model": [
+        "181",
+        0
+      ],
+      "positive": [
+        "184",
+        0
+      ],
+      "negative": [
+        "185",
+        0
+      ],
+      "latent_image": [
+        "183",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "90_left - KSampler"
+    }
+  },
+  "187": {
+    "inputs": {
+      "samples": [
+        "186",
+        0
+      ],
+      "vae": [
+        "102",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "90_left - VAEDecode"
+    }
+  },
+  "188": {
+    "inputs": {
+      "images": [
+        "187",
+        0
+      ],
+      "filename_prefix": "MultiAngle-90_left"
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "90_left - SaveImage"
+    }
+  }
+}

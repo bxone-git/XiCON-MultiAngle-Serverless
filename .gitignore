@@ -1,0 +1,35 @@
+# Models
+*.safetensors
+*.ckpt
+*.pth
+*.bin
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# OMC
+.omc/
+
+# Temp
+tmp/
+temp/
+
+# Env
+.env
+.env.local
