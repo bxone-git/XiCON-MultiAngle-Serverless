@@ -40,21 +40,29 @@ download_if_missing() {
     local name="$3"
 
     if [ -f "$filepath" ]; then
-        echo "  [OK] $name"
-    else
-        echo "  [DOWNLOADING] $name..."
-        mkdir -p "$(dirname "$filepath")"
-        if [ -n "$HF_TOKEN" ]; then
-            wget --progress=dot:giga --header "Authorization: Bearer $HF_TOKEN" -O "$filepath" "$url"
-        else
-            wget --progress=dot:giga -O "$filepath" "$url"
-        fi
-        if [ $? -eq 0 ]; then
-            echo "  [OK] $name (downloaded)"
-        else
-            echo "  [FAILED] $name - download failed"
+        # Check for truncated/corrupted files (all models should be >10MB)
+        local filesize=$(stat -c%s "$filepath" 2>/dev/null || stat -f%z "$filepath" 2>/dev/null || echo "0")
+        if [ "$filesize" -lt 10000000 ]; then
+            echo "  [CORRUPTED] $name (${filesize} bytes) - re-downloading..."
             rm -f "$filepath"
+        else
+            echo "  [OK] $name ($(( filesize / 1048576 ))MB)"
+            return 0
         fi
+    fi
+    # Download
+    echo "  [DOWNLOADING] $name..."
+    mkdir -p "$(dirname "$filepath")"
+    if [ -n "$HF_TOKEN" ]; then
+        wget --progress=dot:giga --header "Authorization: Bearer $HF_TOKEN" -O "$filepath" "$url"
+    else
+        wget --progress=dot:giga -O "$filepath" "$url"
+    fi
+    if [ $? -eq 0 ]; then
+        echo "  [OK] $name (downloaded)"
+    else
+        echo "  [FAILED] $name - download failed"
+        rm -f "$filepath"
     fi
 }
 
