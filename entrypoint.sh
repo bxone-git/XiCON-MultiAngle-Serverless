@@ -33,24 +33,53 @@ else
     echo "WARNING: $NETVOLUME/models not found, skipping symlinks"
 fi
 
-# Model verification (warnings only, never exit)
-check_model() {
-    local model_path="$1"
-    local model_name="$2"
+# Auto-download missing models from HuggingFace
+download_if_missing() {
+    local filepath="$1"
+    local url="$2"
+    local name="$3"
 
-    if [ ! -f "$model_path" ]; then
-        echo "  [MISSING] $model_name ($model_path)"
+    if [ -f "$filepath" ]; then
+        echo "  [OK] $name"
     else
-        echo "  [OK] $model_name"
+        echo "  [DOWNLOADING] $name..."
+        mkdir -p "$(dirname "$filepath")"
+        HF_AUTH=""
+        if [ -n "$HF_TOKEN" ]; then
+            HF_AUTH="--header=Authorization: Bearer $HF_TOKEN"
+        fi
+        wget -q --show-progress $HF_AUTH -O "$filepath" "$url"
+        if [ $? -eq 0 ]; then
+            echo "  [OK] $name (downloaded)"
+        else
+            echo "  [FAILED] $name - download failed"
+            rm -f "$filepath"
+        fi
     fi
 }
 
-echo "Verifying models..."
-check_model "$NETVOLUME/models/diffusion_models/qwen_image_edit_2509_fp8_e4m3fn.safetensors" "Qwen Image Edit UNET FP8"
-check_model "$NETVOLUME/models/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors" "Qwen 2.5 VL 7B CLIP FP8"
-check_model "$NETVOLUME/models/vae/qwen_image_vae.safetensors" "Qwen Image VAE"
-check_model "$NETVOLUME/models/loras/Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors" "Lightning 4steps LoRA"
-check_model "$NETVOLUME/models/loras/Qwen-Edit-2509-Multiple-angles.safetensors" "Multiple Angles LoRA"
+echo "Checking/downloading models..."
+mkdir -p "$NETVOLUME/models/diffusion_models" "$NETVOLUME/models/text_encoders" "$NETVOLUME/models/vae" "$NETVOLUME/models/loras"
+
+download_if_missing "$NETVOLUME/models/diffusion_models/qwen_image_edit_2509_fp8_e4m3fn.safetensors" \
+    "https://huggingface.co/Comfy-Org/Qwen-Image-Edit_ComfyUI/resolve/main/split_files/diffusion_models/qwen_image_edit_2509_fp8_e4m3fn.safetensors" \
+    "Qwen Image Edit UNET FP8"
+
+download_if_missing "$NETVOLUME/models/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors" \
+    "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors" \
+    "Qwen 2.5 VL 7B CLIP FP8"
+
+download_if_missing "$NETVOLUME/models/vae/qwen_image_vae.safetensors" \
+    "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors" \
+    "Qwen Image VAE"
+
+download_if_missing "$NETVOLUME/models/loras/Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors" \
+    "https://huggingface.co/lightx2v/Qwen-Image-Lightning/resolve/main/Qwen-Image-Edit-2509/Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors" \
+    "Lightning 4steps LoRA"
+
+download_if_missing "$NETVOLUME/models/loras/Qwen-Edit-2509-Multiple-angles.safetensors" \
+    "https://huggingface.co/Comfy-Org/Qwen-Image-Edit_ComfyUI/resolve/main/split_files/loras/Qwen-Edit-2509-Multiple-angles.safetensors" \
+    "Multiple Angles LoRA"
 
 # GPU Detection
 GPU_NAME=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -1 || echo "Unknown")
